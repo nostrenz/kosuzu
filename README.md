@@ -1,6 +1,7 @@
 # Kosuzu
 
 Download and view Danbooru pools with their translation notes.
+
 Can also function as a simple comic book reader.
 
 ![Main window](https://raw.githubusercontent.com/nostrenz/kosuzu/master/img/screenshot.png)
@@ -18,7 +19,7 @@ Can also function as a simple comic book reader.
 
 ## Why
 
-There's a ton of translated doujinshi on Danbooru, but while it's easy to download them with tools like [Grabber](https://github.com/Bionus/imgbrd-grabber) there's unfortunatly no way to keep a local copy without losing the translation notes.
+There are tons of translated doujinshi on Danbooru, but while it's easy to download them with tools like [Grabber](https://github.com/Bionus/imgbrd-grabber) there's unfortunatly no way to keep a local copy without losing the translation notes.
 
 This tool can download an entire pool or just a single post from Danbooru and stores the result into a .ksz file which can be opened to view it with the translation notes on top of the images.
 
