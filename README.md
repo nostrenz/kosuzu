@@ -40,7 +40,7 @@ Once downloaded, Kosuzu stores her books in a `downloads` folder in the program'
 
 Also, this program can open other zip-based comic book formats (like CBZ), and ksz files can be opened by any comic book reader supporting the CBZ format, but of courses translation notes won't be displayed by those.
 
-## Builing from source
+## Building from source
 
 * After cloning the repo, install submodules with:
 
