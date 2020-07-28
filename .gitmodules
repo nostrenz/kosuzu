@@ -1,0 +1,6 @@
+[submodule "lib/QuaZIP"]
+	path = lib/QuaZIP
+	url = https://github.com/stachenov/quazip
+[submodule "lib/SingleApplication"]
+	path = lib/SingleApplication
+	url = https://github.com/itay-grudev/SingleApplication.git
