@@ -110,8 +110,7 @@ class MainWindow : public QMainWindow
 		void onOpenProgramFolder();
 		void onOpenDownloadsFolder();
 		void onGitHubRepository();
-
-	private slots:
-
+		void onToggleStatusBar();
 };
+
 #endif // MAINWINDOW_H

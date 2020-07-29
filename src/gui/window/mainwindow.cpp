@@ -401,7 +401,11 @@ void MainWindow::jump(unsigned int page)
  */
 void MainWindow::fixWidgetSizes()
 {
-	int height = this->height() - ui->statusBar->height();
+	int height = this->height();
+
+	if (ui->statusBar->isVisible()) {
+		height -= ui->statusBar->height();
+	}
 
 	if (!this->isFullScreen()) {
 		height -= (ui->widgetButtons->height() + ui->menuBar->height());
@@ -918,6 +922,7 @@ void MainWindow::onScrollAreaContextMenu(const QPoint &pos)
 	menu.addAction(utils::icon("fit"), "Toggle fit", this, SLOT(onFitAction()));
 	menu.addAction(utils::icon("rtl"), "Toggle right to left", this, SLOT(onRightToLeftAction()));
 	menu.addAction(utils::icon("expand"), "Toggle fullscreen", this, SLOT(onToggleFullscreen()));
+	menu.addAction(utils::icon("status"), "Toggle status bar", this, SLOT(onToggleStatusBar()));
 	menu.addSeparator();
 	menu.addAction(utils::icon("folder"), "Open folder", this, SLOT(onOpenContainingFolder()));
 
@@ -1130,4 +1135,9 @@ void MainWindow::onLastPage()
 	if (m_ksz != nullptr) {
 		ui->buttonRightToLeft->isChecked() ? this->jump(1) : this->jump(m_ksz->pages());
 	}
+}
+
+void MainWindow::onToggleStatusBar()
+{
+	ui->statusBar->setVisible(!ui->statusBar->isVisible());
 }
