@@ -63,7 +63,6 @@ class MainWindow : public QMainWindow
 		void refreshNotes();
 		void refreshImage();
 		void fixWidgetSizes();
-		void showCollection();
 		void showDownloader();
 		void setIcon(QPushButton* button, QString icon);
 		void toggleButtonStyle(QPushButton* button);

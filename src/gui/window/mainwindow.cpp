@@ -713,18 +713,6 @@ void MainWindow::dropEvent(QDropEvent* event)
 	}
 }
 
-void MainWindow::showCollection()
-{
-	if (m_collectionWindow != nullptr) {
-		return;
-	}
-
-	m_collectionWindow = new CollectionWindow(this);
-	m_collectionWindow->setMainWindow(this);
-	m_collectionWindow->centerParent();
-	m_collectionWindow->show();
-}
-
 void MainWindow::showDownloader()
 {
 	if (m_downloadWindow != nullptr) {
@@ -809,6 +797,7 @@ void MainWindow::onToggleCollection()
 	m_collectionWindow->setMainWindow(this);
 	m_collectionWindow->centerParent();
 	m_collectionWindow->show();
+	m_collectionWindow->activateWindow();
 }
 
 void MainWindow::onToggleDownloader()
