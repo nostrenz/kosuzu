@@ -26,6 +26,8 @@
 #include <QFileDialog>
 #include <QMimeData>
 #include <QFontDatabase>
+#include <QToolBar>
+#include <QWidgetAction>
 
 ///
 /// Constant
@@ -910,12 +912,18 @@ void MainWindow::onScrollAreaContextMenu(const QPoint &pos)
 	}
 
 	QMenu menu;
+	QWidgetAction widgetAction(0);
+	QToolBar toolbar;
 
-	menu.addAction(utils::icon("first"), (ui->buttonRightToLeft->isChecked() ? "Last" : "First"), this, SLOT(onFirstPage()));
-	menu.addAction(utils::icon("previous"), (ui->buttonRightToLeft->isChecked() ? "Next" : "Previous"), this, SLOT(onPreviousPage()));
-	menu.addAction(utils::icon("page"), "Jump", this, SLOT(onJumpToPage()));
-	menu.addAction(utils::icon("next"), (ui->buttonRightToLeft->isChecked() ? "Previous" : "Next"), this, SLOT(onNextPage()));
-	menu.addAction(utils::icon("last"), (ui->buttonRightToLeft->isChecked() ? "First" : "Last"), this, SLOT(onLastPage()));
+	widgetAction.setDefaultWidget(&toolbar);
+
+	toolbar.addAction(utils::icon("first"), (ui->buttonRightToLeft->isChecked() ? "Last" : "First"), this, SLOT(onFirstPage()));
+	toolbar.addAction(utils::icon("previous"), (ui->buttonRightToLeft->isChecked() ? "Next" : "Previous"), this, SLOT(onPreviousPage()));
+	toolbar.addAction(utils::icon("page"), "Jump", this, SLOT(onJumpToPage()));
+	toolbar.addAction(utils::icon("next"), (ui->buttonRightToLeft->isChecked() ? "Previous" : "Next"), this, SLOT(onNextPage()));
+	toolbar.addAction(utils::icon("last"), (ui->buttonRightToLeft->isChecked() ? "First" : "Last"), this, SLOT(onLastPage()));
+
+	menu.addAction(&widgetAction);
 	menu.addSeparator();
 	menu.addAction(utils::icon("note"), "Toggle notes", this, SLOT(onToggleNotes()));
 	menu.addAction(utils::icon("switch"), "Toggle note style", this, SLOT(onToggleNoteStyle()));
