@@ -10,7 +10,6 @@ TooltipLabel::TooltipLabel()
 	this->setWordWrap(true);
 	this->setAlignment(Qt::AlignCenter);
 	this->setTextFormat(Qt::TextFormat::RichText);
-	this->setMaximumWidth(320);
 	this->setMargin(0);
 	this->setContentsMargins(0, 0, 0, 0);
 	this->setStyleSheet("QLabel {color: black; background-color: rgb(255,255,238); border: 1px solid #000; margin: 0px; padding: 0px;}");
