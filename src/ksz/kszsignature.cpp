@@ -38,12 +38,10 @@ QString KszSignature::sha1(QString filePath)
  */
 QString KszSignature::bytes(QString filePath, unsigned int length)
 {
-	FILE* file = fopen(filePath.toLatin1().constData(), "r+b");
+	FILE* file = fopen(filePath.toUtf8().constData(), "r+b");
 	QString result;
 
 	if (file == NULL) {
-		fclose(file);
-
 		return result;
 	}
 
