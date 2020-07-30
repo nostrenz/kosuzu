@@ -12,8 +12,10 @@ class KszSignature
 {
 	public:
 		KszSignature();
-		static QString sha1(QString filePath);
-		static QString bytes(QString filePath, unsigned int length=16);
+		static QString read(QString filePath, unsigned int length=16);
+
+	private:
+		static void appendHex(FILE* file, unsigned int length, QString &str);
 };
 
 #endif // KSZSIGNATURE_H

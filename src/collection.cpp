@@ -34,7 +34,7 @@ Collection::~Collection()
 
 bool Collection::save(Ksz* ksz, bool keepPage, QString previousSignature)
 {
-	QString kszSignature = KszSignature::bytes(ksz->path());
+	QString kszSignature = KszSignature::read(ksz->path());
 
 	if (kszSignature.isNull()) {
 		return false;
@@ -90,7 +90,7 @@ Ksz* Collection::save(QString filePath, bool &isNew)
 
 void Collection::remove(Ksz* ksz)
 {
-	QString signature = KszSignature::bytes(ksz->path());
+	QString signature = KszSignature::read(ksz->path());
 
 	if (signature.isNull()) {
 		return;
@@ -105,7 +105,7 @@ void Collection::remove(Ksz* ksz)
 
 bool Collection::has(QString filePath) const
 {
-	QString signature = KszSignature::bytes(filePath);
+	QString signature = KszSignature::read(filePath);
 
 	if (signature.isNull()) {
 		return false;

@@ -9,7 +9,7 @@ DownloadQuery::DownloadQuery(DanbooruUrl* url)
 DownloadQuery::DownloadQuery(Ksz* ksz, unsigned int postId)
 {
 	m_url = new DanbooruUrl(ksz->poolId(), postId);
-	m_kszSignature = KszSignature::bytes(ksz->path());
+	m_kszSignature = KszSignature::read(ksz->path());
 
 	this->setKszPath(ksz->path());
 	this->setDownloadedPosts(ksz->pages());
