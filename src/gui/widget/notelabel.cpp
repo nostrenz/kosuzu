@@ -1,4 +1,5 @@
 #include <src/gui/widget/notelabel.h>
+#include <src/utils.h>
 #include <QPainter>
 #include <QToolTip>
 
@@ -165,11 +166,6 @@ void NoteLabel::parseBody()
 
 		// Remove font-size rule from style
 		editedStyle.replace("font-size:" + fontSize + ";", "");
-
-		text.replace(style, editedStyle.trimmed());
-		text.replace(" style=\"\"", "");
-
-		m_note->setBody(text);
 	}
 
 	if (backgroundColorIndex != -1) {
@@ -178,6 +174,32 @@ void NoteLabel::parseBody()
 	} else if (backgroundIndex != -1) {
 		backgroundIndex += 11;
 		m_backgroundColor = style.mid(backgroundIndex, style.indexOf(';', backgroundIndex)-backgroundIndex);
+	}
+
+	int colorIndex = editedStyle.indexOf("color:");
+	int textShadowIndex = editedStyle.indexOf("text-shadow:");
+
+	// Qt's stylesheet don't support text-shadow so we'll use its color as the text color instead
+	if (textShadowIndex != -1 && colorIndex != -1) {
+		textShadowIndex += 12;
+		colorIndex += 6;
+
+		QString textShadow = editedStyle.mid(textShadowIndex, editedStyle.indexOf(';', textShadowIndex)-textShadowIndex);
+		QString color = editedStyle.mid(colorIndex, editedStyle.indexOf(';', colorIndex)-colorIndex);
+		QString textShadowColor = utils::regex(textShadow, "[a-z]{3,}", 0);
+
+		if (!textShadowColor.isNull()) {
+			editedStyle.replace("color:" + color + ";", "color:" + textShadowColor + ";");
+			editedStyle.replace("text-shadow:" + textShadow + ";" , "");
+		}
+	}
+
+	// Set new style
+	if (editedStyle != style) {
+		text.replace(style, editedStyle.trimmed());
+		text.replace(" style=\"\"", "");
+
+		m_note->setBody(text);
 	}
 }
 
