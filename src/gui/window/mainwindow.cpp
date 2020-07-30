@@ -772,7 +772,7 @@ void MainWindow::receivedMessage(int instanceId, QByteArray message)
 
 void MainWindow::onOpenKsz()
 {
-	QString fileName = QFileDialog::getOpenFileName(this, "Open KSZ", "./", "Book (*.ksz | *.cbz)", 0 , QFileDialog::DontUseNativeDialog);
+	QString fileName = QFileDialog::getOpenFileName(this, "Open KSZ", "./", "Book (*.ksz | *.cbz)");
 
 	if (fileName.isNull()) {
 		return;
