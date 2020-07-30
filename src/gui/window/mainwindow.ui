@@ -586,7 +586,7 @@
          <x>0</x>
          <y>0</y>
          <width>940</width>
-         <height>497</height>
+         <height>501</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -643,7 +643,7 @@
      <x>0</x>
      <y>0</y>
      <width>940</width>
-     <height>23</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -668,7 +668,7 @@
   </widget>
   <action name="actionOpenKszFile">
    <property name="text">
-    <string>Open ksz file</string>
+    <string>Open file</string>
    </property>
   </action>
   <action name="actionCollection">
