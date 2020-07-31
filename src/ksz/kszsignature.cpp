@@ -3,6 +3,7 @@
 #include <QFile>
 
 #define ZIP_START 22
+#define ZIP_END 2
 #define FIRST_BYTES 3
 
 KszSignature::KszSignature()
@@ -37,8 +38,8 @@ QString KszSignature::read(QString filePath, unsigned int length)
 		return result;
 	}
 
-	if (fileSize < ZIP_START + FIRST_BYTES + length) {
-		length = fileSize - ZIP_START - FIRST_BYTES;
+	if (fileSize < ZIP_START + FIRST_BYTES + length + ZIP_END) {
+		length = fileSize - ZIP_START - FIRST_BYTES - ZIP_END;
 	}
 
 	// Read the first bytes
@@ -46,7 +47,7 @@ QString KszSignature::read(QString filePath, unsigned int length)
 	KszSignature::appendHex(file, FIRST_BYTES, result);
 
 	// Read some bytes at end of file
-	fseek(file, -length, SEEK_SET);
+	fseek(file, fileSize-length-ZIP_END, SEEK_SET);
 	KszSignature::appendHex(file, length, result);
 
 	fclose(file);
@@ -60,11 +61,19 @@ QString KszSignature::read(QString filePath, unsigned int length)
 
 void KszSignature::appendHex(FILE* file, unsigned int length, QString &str)
 {
-	for (unsigned int i = 0; i < length; i++) {
+	unsigned int i = 0;
+
+	while (i < length) {
 		int c = fgetc(file);
 
-		if (c != -1) {
+		if (c == EOF) {
+			break;
+		}
+
+		if (c != 0) {
 			str += QString().asprintf("%X", c);
 		}
+
+		i++;
 	}
 }
