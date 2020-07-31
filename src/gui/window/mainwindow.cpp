@@ -1093,12 +1093,12 @@ void MainWindow::onAboutQt()
 
 void MainWindow::onOpenProgramFolder()
 {
-	QDesktopServices::openUrl(QUrl(APP_DIR));
+	QDesktopServices::openUrl(APP_DIR);
 }
 
 void MainWindow::onOpenDownloadsFolder()
 {
-	QDesktopServices::openUrl(QUrl(APP_DIR + "/downloads"));
+	utils::openDownloadDir();
 }
 
 void MainWindow::onGitHubRepository()

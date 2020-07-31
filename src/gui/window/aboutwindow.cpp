@@ -1,8 +1,6 @@
 #include "aboutwindow.h"
 #include "ui_aboutwindow.h"
 #include <src/main.h>
-#include <QDesktopServices>
-#include <QUrl>
 
 AboutWindow::AboutWindow(QWidget *parent) : QDialog(parent), ui(new Ui::AboutWindow)
 {

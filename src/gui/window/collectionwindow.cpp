@@ -5,7 +5,6 @@
 #include <src/serializer.h>
 #include <QKeyEvent>
 #include <QMimeData>
-#include <QDesktopServices>
 #include <QMenu>
 #include <QMessageBox>
 
