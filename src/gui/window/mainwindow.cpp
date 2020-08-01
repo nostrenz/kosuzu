@@ -58,7 +58,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	m_fontSlider->setStyleSheet("background-color: #505050;");
 	m_fontSlider->setValue((settings.fontSize() >= m_fontSlider->minimum() && settings.fontSize() <= m_fontSlider->maximum()) ? settings.fontSize() : FONT_SIZE);
 	m_fontSlider->setMaximumWidth(100);
-	m_fontSlider->setToolTip("Font size: " + QString::number(m_fontSlider->value()));
 
 	ui->scrollArea->installEventFilter(this);
 	ui->scrollArea->setBackgroundRole(QPalette::Dark);
