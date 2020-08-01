@@ -216,7 +216,7 @@ Post* KszReader::readXmlByFilename(QString fileName)
 				post->setId(xml.attributes().value("post").toUInt());
 			}
 		} else if (xml.name() == "note") {
-			QString text;
+			QString body;
 			unsigned int x = xml.attributes().value("x").toUInt();
 			unsigned int y = xml.attributes().value("y").toUInt();
 			unsigned int width = xml.attributes().value("width").toUInt();
@@ -225,13 +225,13 @@ Post* KszReader::readXmlByFilename(QString fileName)
 			// Go to inner text
 			xml.readNext();
 
-			text = xml.text().toUtf8();
+			body = xml.text().toUtf8();
 
 			// Go to </note>
 			xml.readNext();
 
 			if (xml.isEndElement() && xml.name() == "note") {
-				post->addNote(new Note(text, x, y, width, height));
+				post->addNote(new Note(body, x, y, width, height));
 			}
 		}
 

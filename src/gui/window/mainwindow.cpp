@@ -28,6 +28,7 @@
 #include <QFontDatabase>
 #include <QToolBar>
 #include <QWidgetAction>
+#include <QSlider>
 
 ///
 /// Constant
@@ -51,6 +52,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	Settings settings;
 	settings.read();
 
+	QSlider* fontSlider = new QSlider(this);
+	fontSlider->setOrientation(Qt::Horizontal);
+	fontSlider->setMinimum(8);
+	fontSlider->setMaximum(18);
+	fontSlider->setValue(FONT_SIZE);
+	fontSlider->setStyleSheet("background-color: #505050;");
+
 	ui->scrollArea->installEventFilter(this);
 	ui->scrollArea->setBackgroundRole(QPalette::Dark);
 	ui->scrollArea->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -58,6 +66,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	ui->buttonNotes->setChecked(settings.notes());
 	ui->buttonFit->setChecked(settings.fit());
 	ui->buttonRightToLeft->setChecked(settings.rightToLeft());
+	ui->statusBar->addPermanentWidget(fontSlider);
 
 	this->setIcon(ui->buttonPage, "page");
 	this->setIcon(ui->buttonNotes, "note");
@@ -98,6 +107,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	connect(ui->buttonCollection, SIGNAL(clicked()), this, SLOT(onToggleCollection()));
 	connect(ui->buttonDownloader, SIGNAL(clicked()), this, SLOT(onToggleDownloader()));
 	connect(ui->scrollArea, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onScrollAreaContextMenu(QPoint)));
+	connect(fontSlider, SIGNAL(valueChanged(int)), this, SLOT(onFontSliderValueChanged(int)));
 
 	// Load font
 	int fontId = QFontDatabase::addApplicationFont(APP_DIR + "/assets/CC Wild Words.ttf");
@@ -230,7 +240,7 @@ void MainWindow::addNote(Note* note)
 	label->setMinimumWidth(0);
 	label->setMinimumHeight(0);
 	label->setParent(ui->scrollAreaWidgetContents);
-	label->setBackgroundStyle(m_currentNoteStyle, m_scaleRatio);
+	label->setBackgroundStyle(m_currentNoteStyle, m_fontSize, m_scaleRatio);
 	label->setVisible(ui->buttonNotes->isChecked());
 	//label->renderVertically();
 
@@ -325,7 +335,7 @@ void MainWindow::refreshNotes()
 		int h = qRound((float)noteLabel->note()->height() * m_scaleRatio);
 
 		noteLabel->setGeometry(x, y, w, h);
-		noteLabel->setBackgroundStyle(m_currentNoteStyle, m_scaleRatio);
+		noteLabel->setBackgroundStyle(m_currentNoteStyle, m_fontSize, m_scaleRatio);
 	}
 }
 
@@ -639,7 +649,7 @@ void MainWindow::switchNotesStyle()
 			continue;
 		}
 
-		q->setBackgroundStyle(m_currentNoteStyle, m_scaleRatio);
+		q->setBackgroundStyle(m_currentNoteStyle, m_fontSize, m_scaleRatio);
 	}
 }
 
@@ -842,7 +852,7 @@ void MainWindow::showTooltip(NoteLabel* noteLabel)
 	int x = noteLabel->x();
 	int y = noteLabel->y() + noteLabel->height() + 5;
 
-	m_tooltipLabel->setText(noteLabel->body());
+	m_tooltipLabel->setText(noteLabel->body(m_fontSize));
 	m_tooltipLabel->setAppearance();
 	m_tooltipLabel->setGeometry(x, y, 100, 50);
 	m_tooltipLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -1137,4 +1147,11 @@ void MainWindow::onLastPage()
 void MainWindow::onToggleStatusBar()
 {
 	ui->statusBar->setVisible(!ui->statusBar->isVisible());
+}
+
+void MainWindow::onFontSliderValueChanged(int value)
+{
+	m_fontSize = value;
+
+	this->refreshNotes();
 }

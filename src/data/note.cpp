@@ -38,11 +38,6 @@ unsigned int Note::height() const
 	return m_height;
 }
 
-void Note::setBody(QString body)
-{
-	m_body = body;
-}
-
 void Note::setX(unsigned int x)
 {
 	m_x = x;

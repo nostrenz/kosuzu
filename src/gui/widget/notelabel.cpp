@@ -18,12 +18,49 @@ NoteLabel::NoteLabel(Note* note, QString fontFamily)
 	this->setAlignment(Qt::AlignCenter);
 	this->setTextFormat(Qt::TextFormat::RichText);
 	this->setFont(font);
-	this->parseBody();
+
+	if (!m_note->body().startsWith('<')) {
+		return;
+	}
+
+	// Parse HTML structure
+	int startIndex = m_note->body().indexOf('<');
+	NoteTag* parentTag = nullptr;
+
+	while (startIndex != -1) {
+		int endIndex = m_note->body().indexOf(">", startIndex);
+
+		if (endIndex < 1) {
+			break;
+		}
+
+		endIndex += 1;
+		QString tagText = m_note->body().mid(startIndex, endIndex-startIndex);
+
+		if (tagText.contains("style=\"")) {
+			NoteTag* noteTag = new NoteTag(tagText, startIndex, endIndex, parentTag);
+
+			if (noteTag->styleStart() > 0 && noteTag->styleEnd() > 0) {
+				m_tags.append(noteTag);
+				parentTag = noteTag;
+				m_backgroundColor = noteTag->backgroundColor();
+			} else {
+				delete noteTag;
+			}
+		}
+
+		startIndex = m_note->body().indexOf('<', endIndex);
+
+		if (m_note->body().at(startIndex + 1) == '/') {
+			parentTag = nullptr;
+		}
+	}
 }
 
 NoteLabel::~NoteLabel()
 {
 	m_note = NULL;
+	qDeleteAll(m_tags);
 }
 
 ///
@@ -48,31 +85,35 @@ unsigned int NoteLabel::offsetY() const
 /**
  * For some reason using a QStyleSheet to set the text color only works if text is in a HTML tag.
  */
-QString NoteLabel::body(float scaleRatio, bool isEmbeded) const
+QString NoteLabel::body(int fontSize, float scaleRatio) const
 {
-	int fontSize = qRound(14.0f * m_fontScale);
+	QString body = m_note->body();
 
-	if (scaleRatio != 1) {
-		fontSize = qRound((float)fontSize * scaleRatio);
-	}
+	if (!m_tags.isEmpty()) {
+		int lengthDiff = 0;
 
-	QString style = "font-size:" + QString::number(fontSize) + "px;";
+		foreach (NoteTag* tag, m_tags) {
+			int styleStart = tag->styleStart() - lengthDiff;
+			int styleEnd = (tag->styleEnd()-tag->styleStart()) - (lengthDiff > 0 ? lengthDiff-1 : 0);
 
-	// No pre-set style for this note body
-	if (!m_note->body().startsWith('<')) {
-		style += " padding:5px;";
+			QString originalText = body;
+			QString originalStyle = body.mid(styleStart, styleEnd);
 
-		if (isEmbeded) {
-			style += " color:black; background-color:rgb(255,255,255);";
+			body.replace(styleStart, styleEnd, tag->modifyStyle(fontSize, scaleRatio));
+
+			lengthDiff += (originalText.length() - body.length());
 		}
+	} else {
+		fontSize = qRound((float)fontSize * scaleRatio);
+
+		body = "<div style=\"font-size: " + QString::number(fontSize) + "px;\">" + body + "</div>";
 	}
 
-	return "<div style=\"" + style + "\">" + m_note->body() + "</div>";
-}
+	body.replace("\n", "<br>");
+	body.replace("<tn>", "<p style=\"color: #8C8C8C; font-size: 12px;\">");
+	body.replace("</tn>", "</p>");
 
-float NoteLabel::fontScale() const
-{
-	return m_fontScale;
+	return body;
 }
 
 void NoteLabel::renderVertically()
@@ -92,7 +133,7 @@ void NoteLabel::renderVertically()
 	this->setText(temp);
 }
 
-void NoteLabel::setBackgroundStyle(BackgroundStyle bgStyle, float scaleRatio)
+void NoteLabel::setBackgroundStyle(BackgroundStyle bgStyle, int fontSize, float scaleRatio)
 {
 	m_backgroundStyle = bgStyle;
 
@@ -101,105 +142,7 @@ void NoteLabel::setBackgroundStyle(BackgroundStyle bgStyle, float scaleRatio)
 		this->clear(); // Remove text
 	} else if (bgStyle == BackgroundStyle::Embeded) {
 		this->setStyleSheet("QLabel {color: black; background-color: " + (m_backgroundColor.isNull() ? "rgb(255,255,255)" : m_backgroundColor) + "; border: none; padding: 0px; margin: 0px; border-radius: 10px;}");
-		this->setText(this->body(scaleRatio, true));
-	}
-}
-
-///
-/// Private method
-///
-
-void NoteLabel::parseBody()
-{
-	QString text = m_note->body();
-
-	text.replace("\n", "<br>");
-	text.replace("<tn>", "<p style=\"color: #8C8C8C; font-size: 12px;\">");
-	text.replace("</tn>", "</p>");
-
-	m_note->setBody(text);
-
-	if (!text.startsWith('<')) {
-		return;
-	}
-
-	// Get stylsheet
-	int startIndex = text.indexOf("style=\"");
-
-	if (startIndex == -1) {
-		return;
-	}
-
-	startIndex += 7;
-	int endIndex = text.indexOf('"', startIndex);
-
-	if (endIndex == -1) {
-		return;
-	}
-
-	QString style = text.mid(startIndex, endIndex-startIndex);
-	QString editedStyle = style;
-
-	if (!editedStyle.endsWith(';')) {
-		editedStyle += ';';
-	}
-
-	int fontSizeIndex = editedStyle.indexOf("font-size:");
-	int backgroundColorIndex = editedStyle.indexOf("background-color:");
-	int backgroundIndex = editedStyle.indexOf("background:");
-
-	// Qt doesn't understand font-sizes using the '%' unit so we need to convert then to use 'px'
-	if (fontSizeIndex != -1) {
-		fontSizeIndex += 10;
-		QString fontSize = editedStyle.mid(fontSizeIndex, editedStyle.indexOf(';', fontSizeIndex)-fontSizeIndex);
-		QString newFontSize = fontSize;
-
-		if (newFontSize.endsWith('%')) {
-			newFontSize.remove('%');
-		}
-
-		int value = newFontSize.toInt();
-
-		if (value > 0) {
-			m_fontScale = (float)value / 100;
-		}
-
-		// Remove font-size rule from style
-		editedStyle.replace("font-size:" + fontSize + ";", "");
-	}
-
-	if (backgroundColorIndex != -1) {
-		backgroundColorIndex += 17;
-		m_backgroundColor = style.mid(backgroundColorIndex, style.indexOf(';', backgroundColorIndex)-backgroundColorIndex);
-	} else if (backgroundIndex != -1) {
-		backgroundIndex += 11;
-		m_backgroundColor = style.mid(backgroundIndex, style.indexOf(';', backgroundIndex)-backgroundIndex);
-	}
-
-	int colorIndex = editedStyle.indexOf("color:");
-	int textShadowIndex = editedStyle.indexOf("text-shadow:");
-
-	// Qt's stylesheet don't support text-shadow so we'll use its color as the text color instead
-	if (textShadowIndex != -1 && colorIndex != -1) {
-		textShadowIndex += 12;
-		colorIndex += 6;
-
-		QString textShadow = editedStyle.mid(textShadowIndex, editedStyle.indexOf(';', textShadowIndex)-textShadowIndex);
-		QString color = editedStyle.mid(colorIndex, editedStyle.indexOf(';', colorIndex)-colorIndex);
-		QString textShadowColor = utils::regex(textShadow, "[a-z]{3,}", 0);
-
-		if (!textShadowColor.isNull()) {
-			editedStyle.replace("color:" + color + ";", "color:" + textShadowColor + ";");
-			editedStyle.replace("text-shadow:" + textShadow + ";" , "");
-		}
-	}
-
-	// Set new style
-	if (editedStyle != style) {
-		text.replace(style, editedStyle.trimmed());
-		text.replace(" style=\"\"", "");
-
-		m_note->setBody(text);
+		this->setText(this->body(fontSize, scaleRatio));
 	}
 }
 

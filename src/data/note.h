@@ -19,7 +19,6 @@ class Note
 		unsigned int y() const;
 		unsigned int width() const;
 		unsigned int height() const;
-		void setBody(QString body);
 		void setX(unsigned int x);
 		void setY(unsigned int y);
 		void setWidth(unsigned int width);

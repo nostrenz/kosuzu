@@ -16,6 +16,8 @@
 #include <QCloseEvent>
 #include <QPushButton>
 
+#define FONT_SIZE 14
+
 class CollectionWindow;
 class DownloadWindow;
 
@@ -48,6 +50,7 @@ class MainWindow : public QMainWindow
 		Ksz* m_ksz = nullptr;
 		Post* m_post = nullptr;
 		float m_scaleRatio = 1;
+		int m_fontSize = FONT_SIZE;
 		QString m_fontFamily = "CC Wild Words";
 		void addNote(Note* note);
 		void clearNotes();
@@ -110,6 +113,7 @@ class MainWindow : public QMainWindow
 		void onOpenDownloadsFolder();
 		void onGitHubRepository();
 		void onToggleStatusBar();
+		void onFontSliderValueChanged(int);
 };
 
 #endif // MAINWINDOW_H

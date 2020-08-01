@@ -1309,7 +1309,7 @@ QSlider:focus {
 }
 
 QSlider::groove:horizontal {
-  background: #505050;
+  background: #333333;
   border: 1px solid #505050;
   height: 4px;
   margin: 0px;

@@ -30,6 +30,7 @@ RESOURCES += dist/common/assets/qdarkstyle/style.qrc
 
 SOURCES += \
 	src/ksz/kszsignature.cpp \
+    src/notetag.cpp \
 	src/settings.cpp \
 	src/gui/widget/collectionitem.cpp \
 	src/main.cpp \
@@ -55,6 +56,7 @@ SOURCES += \
 HEADERS += \
 	src/collection.h \
 	src/ksz/kszsignature.h \
+    src/notetag.h \
 	src/settings.h \
 	src/gui/widget/collectionitem.h \
 	src/main.h \
