@@ -116,15 +116,15 @@ int NoteTag::styleEnd() const
 
 QString NoteTag::modifyStyle(int fontSize, float scaleRatio)
 {
-	m_fontScale = this->fontScaleFromParent(this);
+	float fontScale = this->fontScaleFromParent(this);
 
 	if (scaleRatio != 1) {
 		fontSize *= scaleRatio;
 	}
 
-	fontSize = qRound((float)fontSize * m_fontScale);
+	fontSize = qRound((float)fontSize * fontScale);
 
-	if (m_fontScale == 1) {
+	if (fontScale == 1) {
 		return m_style;
 	}
 
