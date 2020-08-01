@@ -1,7 +1,5 @@
 #include <src/gui/widget/notelabel.h>
 #include <src/utils.h>
-#include <QPainter>
-#include <QToolTip>
 
 ///
 /// Constructor
@@ -114,23 +112,6 @@ QString NoteLabel::body(int fontSize, float scaleRatio) const
 	body.replace("</tn>", "</p>");
 
 	return body;
-}
-
-void NoteLabel::renderVertically()
-{
-	// Only use this if words are too big to fit vertically in the bubble
-	if (this->width() > 50) {
-		return;
-	}
-
-	QString text = this->text();
-	QString temp = "";
-
-	for (int i = 0; i < text.size(); i++) {
-		temp += text[i] + "\n";
-	}
-
-	this->setText(temp);
 }
 
 void NoteLabel::setBackgroundStyle(BackgroundStyle bgStyle, int fontSize, float scaleRatio)

@@ -1,4 +1,3 @@
-#include <src/main.h>
 #include <src/settings.h>
 #include <QFile>
 #include <QTextStream>
@@ -38,6 +37,11 @@ unsigned int Settings::lastPage() const
 	return m_lastPage;
 }
 
+char Settings::fontSize() const
+{
+	return m_fontSize;
+}
+
 void Settings::setNotes(bool value)
 {
 	m_notes = value;
@@ -61,6 +65,11 @@ void Settings::setLastKsz(QString value)
 void Settings::setLastPage(unsigned int value)
 {
 	m_lastPage = value;
+}
+
+void Settings::setFontSize(char value)
+{
+	m_fontSize = value;
 }
 
 void Settings::read()
@@ -96,6 +105,8 @@ void Settings::read()
 			m_lastKsz = value;
 		} else if (key == "lastPage") {
 			m_lastPage = value.toUInt();
+		} else if (key == "fontSize") {
+			m_fontSize = value.toInt();
 		}
 	} while (!line.isNull());
 
@@ -118,6 +129,7 @@ void Settings::write()
 	stream << "rightToLeft=" << (m_rightToLeft ? "true" : "false") << "\n";
 	stream << "lastKsz=" << m_lastKsz << "\n";
 	stream << "lastPage=" << m_lastPage << "\n";
+	stream << "fontSize=" << (int)m_fontSize << "\n";
 
 	file.close();
 }

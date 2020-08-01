@@ -26,7 +26,6 @@ class NoteLabel : public QLabel
 		unsigned int offsetX() const;
 		unsigned int offsetY() const;
 		QString body(int fontSize, float scaleRatio=1) const;
-		void renderVertically();
 		void setBackgroundStyle(BackgroundStyle, int fontSize, float scaleRatio=1);
 		void showTooltipLabel();
 		void hideTooltipLabel();

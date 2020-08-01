@@ -1,5 +1,4 @@
 #include <ui_mainwindow.h>
-#include <src/main.h>
 #include <src/utils.h>
 #include <src/serializer.h>
 #include <src/gui/window/mainwindow.h>
@@ -52,12 +51,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	Settings settings;
 	settings.read();
 
-	QSlider* fontSlider = new QSlider(this);
-	fontSlider->setOrientation(Qt::Horizontal);
-	fontSlider->setMinimum(8);
-	fontSlider->setMaximum(18);
-	fontSlider->setValue(FONT_SIZE);
-	fontSlider->setStyleSheet("background-color: #505050;");
+	m_fontSlider = new QSlider(this);
+	m_fontSlider->setOrientation(Qt::Horizontal);
+	m_fontSlider->setMinimum(6);
+	m_fontSlider->setMaximum(22);
+	m_fontSlider->setStyleSheet("background-color: #505050;");
+	m_fontSlider->setValue((settings.fontSize() >= m_fontSlider->minimum() && settings.fontSize() <= m_fontSlider->maximum()) ? settings.fontSize() : FONT_SIZE);
+	m_fontSlider->setMaximumWidth(100);
+	m_fontSlider->setToolTip("Font size: " + QString::number(m_fontSlider->value()));
 
 	ui->scrollArea->installEventFilter(this);
 	ui->scrollArea->setBackgroundRole(QPalette::Dark);
@@ -66,7 +67,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	ui->buttonNotes->setChecked(settings.notes());
 	ui->buttonFit->setChecked(settings.fit());
 	ui->buttonRightToLeft->setChecked(settings.rightToLeft());
-	ui->statusBar->addPermanentWidget(fontSlider);
+	ui->statusBar->addPermanentWidget(m_fontSlider);
 
 	this->setIcon(ui->buttonPage, "page");
 	this->setIcon(ui->buttonNotes, "note");
@@ -107,7 +108,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	connect(ui->buttonCollection, SIGNAL(clicked()), this, SLOT(onToggleCollection()));
 	connect(ui->buttonDownloader, SIGNAL(clicked()), this, SLOT(onToggleDownloader()));
 	connect(ui->scrollArea, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onScrollAreaContextMenu(QPoint)));
-	connect(fontSlider, SIGNAL(valueChanged(int)), this, SLOT(onFontSliderValueChanged(int)));
+	connect(m_fontSlider, SIGNAL(valueChanged(int)), this, SLOT(onFontSliderValueChanged(int)));
 
 	// Load font
 	int fontId = QFontDatabase::addApplicationFont(APP_DIR + "/assets/CC Wild Words.ttf");
@@ -240,9 +241,8 @@ void MainWindow::addNote(Note* note)
 	label->setMinimumWidth(0);
 	label->setMinimumHeight(0);
 	label->setParent(ui->scrollAreaWidgetContents);
-	label->setBackgroundStyle(m_currentNoteStyle, m_fontSize, m_scaleRatio);
+	label->setBackgroundStyle(m_currentNoteStyle, m_fontSlider->value(), m_scaleRatio);
 	label->setVisible(ui->buttonNotes->isChecked());
-	//label->renderVertically();
 
 	connect(label, SIGNAL(showTooltip(NoteLabel*)), this, SLOT(showTooltip(NoteLabel*)));
 	connect(label, SIGNAL(hideTooltip()), this, SLOT(hideTooltip()));
@@ -335,7 +335,7 @@ void MainWindow::refreshNotes()
 		int h = qRound((float)noteLabel->note()->height() * m_scaleRatio);
 
 		noteLabel->setGeometry(x, y, w, h);
-		noteLabel->setBackgroundStyle(m_currentNoteStyle, m_fontSize, m_scaleRatio);
+		noteLabel->setBackgroundStyle(m_currentNoteStyle, m_fontSlider->value(), m_scaleRatio);
 	}
 }
 
@@ -649,7 +649,7 @@ void MainWindow::switchNotesStyle()
 			continue;
 		}
 
-		q->setBackgroundStyle(m_currentNoteStyle, m_fontSize, m_scaleRatio);
+		q->setBackgroundStyle(m_currentNoteStyle, m_fontSlider->value(), m_scaleRatio);
 	}
 }
 
@@ -696,6 +696,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		settings.setRightToLeft(ui->buttonRightToLeft->isChecked());
 		settings.setLastKsz(m_ksz->path());
 		settings.setLastPage(m_ksz->page());
+		settings.setFontSize(m_fontSlider->value());
 
 		settings.write();
 	}
@@ -852,7 +853,7 @@ void MainWindow::showTooltip(NoteLabel* noteLabel)
 	int x = noteLabel->x();
 	int y = noteLabel->y() + noteLabel->height() + 5;
 
-	m_tooltipLabel->setText(noteLabel->body(m_fontSize));
+	m_tooltipLabel->setText(noteLabel->body(m_fontSlider->value()));
 	m_tooltipLabel->setAppearance();
 	m_tooltipLabel->setGeometry(x, y, 100, 50);
 	m_tooltipLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -1151,7 +1152,11 @@ void MainWindow::onToggleStatusBar()
 
 void MainWindow::onFontSliderValueChanged(int value)
 {
-	m_fontSize = value;
+	if (m_ksz == nullptr) {
+		return;
+	}
+
+	QToolTip::showText(m_fontSlider->mapToGlobal(QPoint(0, -50)), "Font size: " + QString::number(m_fontSlider->value()));
 
 	this->refreshNotes();
 }
