@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 	}
 
 	// Open KSZ from command line argument
-	if (!kszPath.isNull() & !kszPath.isEmpty()) {
+	if (!kszPath.isNull() && !kszPath.isEmpty()) {
 		w.openKsz(kszPath);
 	}
 

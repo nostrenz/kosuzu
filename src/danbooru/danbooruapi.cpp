@@ -1,5 +1,9 @@
 #include "danbooruapi.h"
 
+// Usage Agent header used for requests made against Danbooru.
+// Not including that header can trigger the Cloudflare check, preventing to access the requested resource.
+extern const QString USER_AGENT = "Kosuzu/1.0";
+
 const QString BASE_URL = "https://danbooru.donmai.us";
 const QString TEST_URL = "https://testbooru.donmai.us";
 
@@ -42,8 +46,11 @@ QJsonArray DanbooruApi::getNotesJson(int postId)
 
 QString DanbooruApi::fetch(QString route)
 {
+	QNetworkRequest request(QUrl(this->route(route)));
+	request.setHeader(QNetworkRequest::UserAgentHeader, USER_AGENT);
+
 	QNetworkAccessManager manager;
-	QNetworkReply *response = manager.get(QNetworkRequest(QUrl(this->route(route))));
+	QNetworkReply *response = manager.get(request);
 	QEventLoop event;
 
 	connect(response, SIGNAL(finished()), &event, SLOT(quit()));

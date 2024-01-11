@@ -58,7 +58,7 @@
    <item>
     <widget class="QLabel" name="labelRelease">
      <property name="text">
-      <string>release 1, build 2007280211</string>
+      <string>release 4, build 2401112216</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignHCenter|Qt::AlignTop</set>

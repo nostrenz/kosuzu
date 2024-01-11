@@ -10,6 +10,9 @@
 /// and downloader their content.
 ///
 
+// From src/danbooru/danbooruapi.cpp
+extern const QString USER_AGENT;
+
 Downloader::Downloader() : QObject()
 {
 	m_danbooruApi = new DanbooruApi();
@@ -396,7 +399,10 @@ bool Downloader::downloadQuery(DownloadQuery* query)
 bool Downloader::downloadFile(QString fileUrl)
 {
 	QUrl url = QUrl::fromEncoded(fileUrl.toLocal8Bit());
+
 	QNetworkRequest request(url);
+	request.setHeader(QNetworkRequest::UserAgentHeader, USER_AGENT);
+
 	auto reply = m_manager.get(request);
 
 	QObject::connect(reply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(onFileDownloadProgress(qint64,qint64)));
