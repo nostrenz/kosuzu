@@ -58,12 +58,12 @@ void KszWriter::addFile(QString fileName, QByteArray data)
 	imageZipFile.close();
 }
 
-void KszWriter::addNotes(int postId, QVector<Note> notes, int pageNumber)
+/**
+ * Adds the XML file corresponding to a page image file.
+ * It will contain the page's Danbooru post ID as well as its notes, if any.
+ */
+void KszWriter::addPageXml(int postId, QVector<Note> notes, int pageNumber)
 {
-	if (notes.size() < 1) {
-		return;
-	}
-
 	// Write XML
 	QString postXmlContent;
 	QXmlStreamWriter xml(&postXmlContent);

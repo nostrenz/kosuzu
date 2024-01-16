@@ -92,8 +92,6 @@ void Downloader::remove(DownloadQuery* query)
 
 /**
  * Get basic infos about the pool the add it to the download queue.
- *
- * @param pool
  */
 void Downloader::queue(DownloadQuery* query)
 {
@@ -438,32 +436,29 @@ bool Downloader::downloadPost()
 	//QString updatedAt = postJsonObject.value("updated_at").toString();
 
 	QJsonArray notesJsonArray = m_danbooruApi->getNotesJson(postId);
+	QVector<Note> notes;
 
-	if (notesJsonArray.size() > 0) {
-		QVector<Note> notes;
+	foreach (const QJsonValue &v, notesJsonArray) {
+		QJsonObject noteJsonObject = v.toObject();
 
-		foreach (const QJsonValue &v, notesJsonArray) {
-			QJsonObject noteJsonObject = v.toObject();
-
-			// Ignore inactive notes
-			if (!noteJsonObject.value("is_active").toBool()) {
-				continue;
-			}
-
-			//QString noteId = noteJsonObject.value("id").toString();
-			//QString updatedAt = noteJsonObject.value("updated_at").toString();
-
-			notes.append(Note(
-				noteJsonObject.value("body").toString(),
-				noteJsonObject.value("x").toInt(),
-				noteJsonObject.value("y").toInt(),
-				noteJsonObject.value("width").toInt(),
-				noteJsonObject.value("height").toInt()
-			));
+		// Ignore inactive notes
+		if (!noteJsonObject.value("is_active").toBool()) {
+			continue;
 		}
 
-		m_kszWriter->addNotes(postId, notes, m_currentQuery->downloadedPosts()+1);
+		//QString noteId = noteJsonObject.value("id").toString();
+		//QString updatedAt = noteJsonObject.value("updated_at").toString();
+
+		notes.append(Note(
+			noteJsonObject.value("body").toString(),
+			noteJsonObject.value("x").toInt(),
+			noteJsonObject.value("y").toInt(),
+			noteJsonObject.value("width").toInt(),
+			noteJsonObject.value("height").toInt()
+		));
 	}
+
+	m_kszWriter->addPageXml(postId, notes, m_currentQuery->downloadedPosts()+1);
 
 	// Download image
 	return this->downloadFile(fileUrl);

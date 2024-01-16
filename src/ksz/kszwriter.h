@@ -17,7 +17,7 @@ class KszWriter
 		~KszWriter();
 		void addMetaXml(const QString title, const unsigned int poolId=0, const unsigned int postId=0);
 		void addFile(QString fileName, QByteArray data);
-		void addNotes(int postId, QVector<Note> notes, int pageNumber);
+		void addPageXml(int postId, QVector<Note> notes, int pageNumber);
 		bool isOpen() const;
 		QString close(bool rename=false);
 		QString filePath() const;
