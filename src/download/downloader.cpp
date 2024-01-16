@@ -480,9 +480,9 @@ void Downloader::updateQueryFromApi(DownloadQuery* query)
 		return;
 	}
 
-	QString id = jsonObject.value("id").toString();
+	int id = jsonObject.value("id").toInt();
 	QString name = jsonObject.value("name").toString();
-	QString updated = jsonObject.value("updated").toString();
+	QString updated = jsonObject.value("updated_at").toString();
 	int postCount = jsonObject.value("post_count").toInt();
 	QJsonArray postIds = jsonObject.value("post_ids").toArray();
 
