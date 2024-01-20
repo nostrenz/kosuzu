@@ -13,20 +13,38 @@ QT_BEGIN_NAMESPACE
 namespace Danbooru { class DanbooruApi; }
 QT_END_NAMESPACE
 
+struct FetchResponse
+{
+	QString content;
+	QNetworkReply::NetworkError networkError;
+};
+
+struct JsonObjectResponse
+{
+	QJsonObject jsonObject;
+	QNetworkReply::NetworkError networkError;
+};
+
+struct JsonArrayResponse
+{
+	QJsonArray jsonArray;
+	QNetworkReply::NetworkError networkError;
+};
+
 class DanbooruApi : public QObject
 {
 	Q_OBJECT
 
 	public:
 		DanbooruApi(bool test=false);
-		QJsonObject getPoolJson(int poolId);
-		QJsonObject getPostJson(int postId);
-		QJsonArray getNotesJson(int postId);
+		JsonObjectResponse getPoolJson(int poolId) const;
+		JsonObjectResponse getPostJson(int postId) const;
+		JsonArrayResponse getNotesJson(int postId) const;
 
 	private:
 		bool m_test = false;
-		QString fetch(QString url);
-		QString route(QString route);
+		FetchResponse fetch(QString url) const;
+		QString route(QString route) const;
 };
 
 #endif // DANBOORUAPI_H

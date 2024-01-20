@@ -16,35 +16,47 @@ DanbooruApi::DanbooruApi(bool test)
 /// Public method
 ///
 
-QJsonObject DanbooruApi::getPoolJson(int poolId)
+JsonObjectResponse DanbooruApi::getPoolJson(int poolId) const
 {
-	QString json = this->fetch("/pools/" + QString::number(poolId) + ".json");
-	QJsonDocument document = QJsonDocument::fromJson(json.toUtf8());
+	FetchResponse response = this->fetch("/pools/" + QString::number(poolId) + ".json");
+	QJsonDocument document = QJsonDocument::fromJson(response.content.toUtf8());
 
-	return document.object();
+	JsonObjectResponse jsonObjectResponse;
+	jsonObjectResponse.jsonObject = document.object();
+	jsonObjectResponse.networkError = response.networkError;
+
+	return jsonObjectResponse;
 }
 
-QJsonObject DanbooruApi::getPostJson(int postId)
+JsonObjectResponse DanbooruApi::getPostJson(int postId) const
 {
-	QString json = this->fetch("/posts/" + QString::number(postId) + ".json");
-	QJsonDocument document = QJsonDocument::fromJson(json.toUtf8());
+	FetchResponse response = this->fetch("/posts/" + QString::number(postId) + ".json");
+	QJsonDocument document = QJsonDocument::fromJson(response.content.toUtf8());
 
-	return document.object();
+	JsonObjectResponse jsonObjectResponse;
+	jsonObjectResponse.jsonObject = document.object();
+	jsonObjectResponse.networkError = response.networkError;
+
+	return jsonObjectResponse;
 }
 
-QJsonArray DanbooruApi::getNotesJson(int postId)
+JsonArrayResponse DanbooruApi::getNotesJson(int postId) const
 {
-	QString json = this->fetch("/notes.json?limit=1000&group_by=note&search[post_id]=" + QString::number(postId));
-	QJsonDocument document = QJsonDocument::fromJson(json.toUtf8());
+	FetchResponse response = this->fetch("/notes.json?limit=1000&group_by=note&search[post_id]=" + QString::number(postId));
+	QJsonDocument document = QJsonDocument::fromJson(response.content.toUtf8());
 
-	return document.array();
+	JsonArrayResponse jsonArrayResponse;
+	jsonArrayResponse.jsonArray = document.array();
+	jsonArrayResponse.networkError = response.networkError;
+
+	return jsonArrayResponse;
 }
 
 ///
 /// Private method
 ///
 
-QString DanbooruApi::fetch(QString route)
+FetchResponse DanbooruApi::fetch(QString route) const
 {
 	QNetworkRequest request(QUrl(this->route(route)));
 	request.setHeader(QNetworkRequest::UserAgentHeader, USER_AGENT);
@@ -56,10 +68,14 @@ QString DanbooruApi::fetch(QString route)
 	connect(response, SIGNAL(finished()), &event, SLOT(quit()));
 	event.exec();
 
-	return response->readAll();
+	FetchResponse fetchResponse;
+	fetchResponse.content = response->readAll();
+	fetchResponse.networkError = response->error();
+
+	return fetchResponse;
 }
 
-QString DanbooruApi::route(QString route)
+QString DanbooruApi::route(QString route) const
 {
 	return (m_test ? TEST_URL : BASE_URL) + route;
 }

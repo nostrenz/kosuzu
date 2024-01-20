@@ -52,16 +52,6 @@ bool Downloader::add(DanbooruUrl* url)
  */
 bool Downloader::add(DownloadQuery* query)
 {
-	// Single post download
-	if (query->url()->isPostOnly()) {
-		query->setTitle("Post " + QString::number(query->url()->postId()));
-		query->setPostCount(1);
-		query->addPostId(query->url()->postId());
-
-		return this->addReady(query);
-	}
-
-	// Pool download
 	this->updateQueryFromApi(query);
 
 	if (!query->isValid()) {
@@ -418,36 +408,29 @@ QString Downloader::pageName(unsigned int index)
 bool Downloader::downloadPost()
 {
 	int postId = m_currentQuery->postIdOfPage(m_currentQuery->downloadedPosts());
-	QJsonObject postJsonObject = m_danbooruApi->getPostJson(postId);
+	JsonObjectResponse jsonObjectResponse = m_danbooruApi->getPostJson(postId);
 
 	// File cannot be downloaded, skip it
 	// Happens when a gold account is needed
 	// TODO: implement login
-	if (!postJsonObject.contains("file_url")) {
+	if (!jsonObjectResponse.jsonObject.contains("file_url")) {
 		this->afterFileDownload();
 
 		return false;
 	}
 
-	// Post data
-	QString fileUrl = postJsonObject.value("file_url").toString();
-	//QString lastNotedAt = postJsonObject.value("last_noted_at").toString();
-	//QString fileSize = postJsonObject.value("file_size").toString();
-	//QString updatedAt = postJsonObject.value("updated_at").toString();
+	QString fileUrl = jsonObjectResponse.jsonObject.value("file_url").toString();
 
-	QJsonArray notesJsonArray = m_danbooruApi->getNotesJson(postId);
+	JsonArrayResponse jsonArrayResponse = m_danbooruApi->getNotesJson(postId);
 	QVector<Note> notes;
 
-	foreach (const QJsonValue &v, notesJsonArray) {
+	foreach (const QJsonValue &v, jsonArrayResponse.jsonArray) {
 		QJsonObject noteJsonObject = v.toObject();
 
 		// Ignore inactive notes
 		if (!noteJsonObject.value("is_active").toBool()) {
 			continue;
 		}
-
-		//QString noteId = noteJsonObject.value("id").toString();
-		//QString updatedAt = noteJsonObject.value("updated_at").toString();
 
 		notes.append(Note(
 			noteJsonObject.value("body").toString(),
@@ -474,24 +457,43 @@ void Downloader::dequeue(DownloadQuery* query)
  */
 void Downloader::updateQueryFromApi(DownloadQuery* query)
 {
-	QJsonObject jsonObject = m_danbooruApi->getPoolJson(query->url()->poolId());
+	JsonObjectResponse response;
 
-	if (jsonObject.isEmpty()) {
+	if (query->url()->isPostOnly()) {
+		// Single post download
+		response = m_danbooruApi->getPostJson(query->url()->postId());
+	} else {
+		// Pool download
+		response = m_danbooruApi->getPoolJson(query->url()->poolId());
+	}
+
+	query->m_networkError = response.networkError;
+
+	if (response.jsonObject.isEmpty()
+	||  query->m_networkError != QNetworkReply::NetworkError::NoError) {
 		return;
 	}
 
-	int id = jsonObject.value("id").toInt();
-	QString name = jsonObject.value("name").toString();
-	QString updated = jsonObject.value("updated_at").toString();
-	int postCount = jsonObject.value("post_count").toInt();
-	QJsonArray postIds = jsonObject.value("post_ids").toArray();
+	if (query->url()->isPostOnly()) {
+		// Single post download
 
-	foreach (const QJsonValue &v, postIds) {
-		query->addPostId(v.toInt());
+		query->setTitle("Post " + QString::number(query->url()->postId()));
+		query->setPostCount(1);
+		query->addPostId(query->url()->postId());
+	} else {
+		// Pool download
+
+		QString poolName = response.jsonObject.value("name").toString();
+		int postCount = response.jsonObject.value("post_count").toInt();
+		QJsonArray postIds = response.jsonObject.value("post_ids").toArray();
+
+		foreach (const QJsonValue &v, postIds) {
+			query->addPostId(v.toInt());
+		}
+
+		query->setTitle(poolName.replace("_", " "));
+		query->setPostCount(postCount);
 	}
-
-	query->setTitle(name.replace("_", " "));
-	query->setPostCount(postCount);
 }
 
 void Downloader::afterFileDownload()

@@ -11,6 +11,7 @@
 #include <QClipboard>
 #include <QCloseEvent>
 #include <QMenu>
+#include <QMetaEnum>
 
 ///
 /// Constant
@@ -196,13 +197,21 @@ bool DownloadWindow::addDownload(QString text, bool inBatch)
 
 	ui->statusbar->showMessage("Adding " + url->url() + "...");
 
-	bool added = m_downloader->add(url);
+	DownloadQuery* query = new DownloadQuery(url);
+	bool added = m_downloader->add(query);
 
-	if (!added) {
-		ui->statusbar->showMessage("Failed to call Danbooru API");
+	if (added) {
+		return true;
 	}
 
-	return added;
+	QString errorMessage = "Failed to call Danbooru API";
+
+	if (query->m_networkError != QNetworkReply::NetworkError::NoError) {
+		QMetaEnum metaEnum = QMetaEnum::fromType<QNetworkReply::NetworkError>();
+		errorMessage += " | network error " + QString::number(query->m_networkError) + " \"" + metaEnum.valueToKey(query->m_networkError) + '"';
+	}
+
+	ui->statusbar->showMessage(errorMessage);
 }
 
 ///

@@ -5,6 +5,7 @@
 #include <src/data/note.h>
 #include <src/ksz/ksz.h>
 #include <QVector>
+#include <QNetworkReply>
 
 ///
 /// This class represents a Danbooru download.
@@ -39,6 +40,7 @@ class DownloadQuery
 		int postIdOfPage(int page) const;
 		bool hasPostIds() const;
 		void reset();
+		QNetworkReply::NetworkError m_networkError = QNetworkReply::NetworkError::NoError;
 
 	private:
 		DanbooruUrl* m_url;
