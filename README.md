@@ -46,7 +46,7 @@ Also, this program can open other zip-based comic book formats (like CBZ), and k
 
 `git submodule update --init --recursive`
 
-2) Depending on your system, you might need to replace `#include <zlib.h>` with `#include <QtZlib/zlib.h>` for all .cpp and .h files in `lib/QuaZIP/quazip` to use Qt's internal zlib library. Otherwise the project might file to compile.
+2) Depending on your system, you might need to replace `#include <zlib.h>` with `#include <QtZlib/zlib.h>` for all .cpp and .h files in `lib/QuaZIP/quazip` to use Qt's internal zlib library. Otherwise the project might fail to compile.
 
 3) Open the `Kosuzu.pro` file in QtCreator.
 

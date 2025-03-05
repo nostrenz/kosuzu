@@ -29,7 +29,7 @@ bool Settings::rightToLeft() const
 
 QString Settings::lastKsz() const
 {
- return m_lastKsz;
+	return m_lastKsz;
 }
 
 unsigned int Settings::lastPage() const

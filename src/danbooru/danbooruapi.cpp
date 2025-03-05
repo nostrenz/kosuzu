@@ -58,7 +58,21 @@ JsonArrayResponse DanbooruApi::getNotesJson(int postId) const
 
 FetchResponse DanbooruApi::fetch(QString route) const
 {
-	QNetworkRequest request(QUrl(this->route(route)));
+	QUrl url = QUrl(this->route(route));
+
+	// Print the OpenSSL version Qt was built with. For Qt 5.14.2, this should display "OpenSSL 1.1.1d".
+	//qDebug() << QSslSocket::sslLibraryBuildVersionString();
+	//
+	// Print the OpenSSL version the program currently have access to.
+	// If it prints nothing or a version number too different from the one printed above, we'll need
+	// to download the binaries for the right version (1.1.1) and place them next to the executable.
+	// OpenSSL binaries for Windows can be obtained from here: https://wiki.overbyte.eu/wiki/index.php/ICS_Download.
+	//qDebug() << QSslSocket::sslLibraryVersionString();
+	//
+	// If everything's good, this should display "true".
+	//qDebug() << QSslSocket::supportsSsl();
+
+	QNetworkRequest request(url);
 	request.setHeader(QNetworkRequest::UserAgentHeader, USER_AGENT);
 
 	QNetworkAccessManager manager;
