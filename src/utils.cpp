@@ -2,7 +2,7 @@
 #include <src/utils.h>
 #include <src/danbooru/danbooruurl.h>
 #include <src/ksz/kszreader.h>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QStringList>
 #include <QFile>
 #include <QTextStream>
@@ -17,16 +17,14 @@ const QString DOWNLOAD_DIR = "downloads";
 
 QString utils::regex(QString text, QString pattern, int index)
 {
-	QRegExp rx(pattern);
-	rx.indexIn(text);
+	QRegularExpression rx(pattern);
+	QRegularExpressionMatch match = rx.match(text);
 
-	QStringList list = rx.capturedTexts();
-
-	if (list.length() < index+1) {
+	if (!match.hasMatch()) {
 		return NULL;
 	}
 
-	return list[index];
+	return match.captured(index);
 }
 
 QString utils::fileContent(QString path)

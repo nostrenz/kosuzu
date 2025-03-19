@@ -2,14 +2,16 @@
 #include <src/gui/window/mainwindow.h>
 #include <lib/SingleApplication/SingleApplication>
 #include <QTextStream>
-#include <QTextCodec>
+#include <QStringConverter>
 
 QString APP_DIR;
 
 int main(int argc, char* argv[])
 {
 	// Use UTF-8
-	QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
+	#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+		QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
+	#endif
 
 	SingleApplication a(argc, argv, true);
 	QString kszPath;

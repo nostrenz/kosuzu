@@ -573,7 +573,7 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 	}
 
 	// Don't prevent normal scrolling
-	if (ui->imageLabel->pixmap()->height() > ui->scrollArea->height()) {
+	if (ui->imageLabel->pixmap().height() > ui->scrollArea->height()) {
 		return;
 	}
 
@@ -588,12 +588,12 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 
 int MainWindow::calcTopLeftX()
 {
-	return qRound(((float)ui->scrollAreaWidgetContents->width() / 2.0f) - (((float)ui->imageLabel->pixmap()->width()) / 2.0f));
+	return qRound(((float)ui->scrollAreaWidgetContents->width() / 2.0f) - (((float)ui->imageLabel->pixmap().width()) / 2.0f));
 }
 
 int MainWindow::calcTopLeftY()
 {
-	return qRound(((float)ui->scrollAreaWidgetContents->height() / 2.0f) - (((float)ui->imageLabel->pixmap()->height()) / 2.0f));
+	return qRound(((float)ui->scrollAreaWidgetContents->height() / 2.0f) - (((float)ui->imageLabel->pixmap().height()) / 2.0f));
 }
 
 void MainWindow::calcScaleRatio()
