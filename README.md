@@ -8,6 +8,8 @@ Can also function as a simple comic book reader.
 
 ## Dependencies:
 
+* **Qt version 6.8.2**
+
 * **QuaZIP** by _stachenov_:
 [GitHub](https://github.com/stachenov/quazip)
 

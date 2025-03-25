@@ -1,3 +1,4 @@
+#include "lib/QuaZIP/quazip/quazipfile.h"
 #include <src/ksz/kszreader.h>
 #include <src/utils.h>
 #include <QXmlStreamReader>

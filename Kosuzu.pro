@@ -1,6 +1,7 @@
 QT += core gui
 QT += network
 QT += printsupport
+QT += core5compat
 
 INCLUDEPATH += $$[QT_INSTALL_PREFIX]/src/3rdparty/zlib
 

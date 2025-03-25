@@ -2,7 +2,6 @@
 #define KSZREADER_H
 
 #include "lib/QuaZIP/quazip/quazip.h"
-#include "lib/QuaZIP/quazip/quazipfile.h"
 #include <src/ksz/ksz.h>
 #include <src/data/post.h>
 #include <src/data/note.h>
